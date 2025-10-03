@@ -9,7 +9,7 @@ import java.util.List;
 
 @org.springframework.web.bind.annotation.RestController
 @RequestMapping("/notes")
-@CrossOrigin(origins = "https://note-stack.netlify.app/")
+@CrossOrigin(origins = "https://note-stack.netlify.app")
 public class RestController {
     @Autowired
     private NotesService service;
