@@ -1,6 +1,8 @@
 package com.champ.notes_app.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
@@ -19,9 +21,23 @@ public class Note
     @CreationTimestamp
     private Timestamp timestamp;
 
-    public Note(String title, String body) {
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+    @ManyToOne
+    @JoinColumn(name="user_email")
+    @JsonBackReference   //Use DTo instead and only return valid fields except user
+    private User user;
+
+
+    public Note(String title, String body, User user) {
         this.title = title;
         this.body = body;
+        this.user=user;
     }
 
     public Timestamp getTimestamp() {
