@@ -1,16 +1,13 @@
-package com.champ.notes_app.RController;
+package com.champ.notes_app.Controller;
 
 import com.champ.notes_app.Config.JwtService;
 import com.champ.notes_app.Entity.Note;
 import com.champ.notes_app.Service.NotesService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
