@@ -109,7 +109,7 @@ public class EmailService implements IServiceEmail {
                 """.formatted(otp);
 
         CreateEmailOptions request = CreateEmailOptions.builder()
-                .from("Note-Stack <note.stack123@gmail.com>")
+                .from("Note-Stack <onboarding@resend.dev>")
                 .to(to)
                 .subject("User Authentication")
                 .html(htmlContent)
