@@ -7,7 +7,6 @@ import com.champ.notes_app.Repo.LoginRepo;
 import com.champ.notes_app.Service.EmailService;
 import com.champ.notes_app.Service.OtpService;
 import com.champ.notes_app.Service.RedisService;
-import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +53,7 @@ public class LoginController {
     }
 
     @PostMapping("/login/add/send-mail")
-    public ResponseEntity<HttpStatus> sendEmail(@RequestBody EmailRequestDto request) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<HttpStatus> sendEmail(@RequestBody EmailRequestDto request) throws Exception {
         User findUser = repo.findByEmail(request.getEmail());
         if(findUser!=null){
             return new ResponseEntity<>(HttpStatus.ALREADY_REPORTED);
@@ -62,7 +61,7 @@ public class LoginController {
 
         String otp= otpService.generateOtp();
         redisService.saveOtp(request.getEmail(),otp);
-        emailService.sendHtmlEmail(request.getEmail(),"User Authentication",otp);
+        emailService.sendHtmlEmail(request.getEmail(),otp);
          return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -81,12 +80,12 @@ public class LoginController {
     }
 
     @PostMapping("/login/check-email")
-    public ResponseEntity<HttpStatus> checkEmail(@RequestBody EmailRequestDto  request) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<HttpStatus> checkEmail(@RequestBody EmailRequestDto  request) throws Exception {
         User user = repo.findByEmail(request.getEmail());
         if(user!=null){
             String otp= otpService.generateOtp();
             redisService.saveOtp(request.getEmail(), otp);
-            emailService.sendHtmlEmail(request.getEmail(), "User Authentication",otp);
+            emailService.sendHtmlEmail(request.getEmail(),otp);
             return new ResponseEntity<>(HttpStatus.OK);
 
         }

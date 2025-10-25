@@ -1,23 +1,24 @@
 package com.champ.notes_app.Service;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
+import com.resend.Resend;
+import com.resend.services.emails.model.CreateEmailOptions;
+import com.resend.services.emails.model.CreateEmailResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.beans.factory.annotation.Value;
+import com.resend.core.exception.ResendException;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
 
 @Service
 public class EmailService implements IServiceEmail {
-    @Autowired
-    private JavaMailSender mailSender;
+
+    @Value("${resend.api.key}")
+    private String resendApiKey;
 
     @Override
-    public void sendHtmlEmail(String to, String subject, String otp) throws MessagingException, UnsupportedEncodingException {
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+    public void sendHtmlEmail(String to, String otp) throws Exception {
+        Resend resend = new Resend(resendApiKey);
 
         String htmlContent = """
                 <html>
@@ -107,12 +108,18 @@ public class EmailService implements IServiceEmail {
                 </html>
                 """.formatted(otp);
 
+        CreateEmailOptions request = CreateEmailOptions.builder()
+                .from("Note-Stack <note.stack123@gmail.com>")
+                .to(to)
+                .subject("User Authentication")
+                .html(htmlContent)
+                .build();
 
-        helper.setTo(to);
-        helper.setSubject(subject);
-        helper.setText(htmlContent, true); // true = HTML
-        helper.setFrom("note.stack123@gmail.com", "Note-Stack");
 
-        mailSender.send(message);
+        try {
+            CreateEmailResponse response = resend.emails().send(request);
+        } catch (ResendException e) {
+            throw new RuntimeException("Failed to send email: " + e.getMessage(), e);
+        }
     }
 }
