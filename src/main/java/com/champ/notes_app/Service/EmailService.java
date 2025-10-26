@@ -109,12 +109,11 @@ public class EmailService implements IServiceEmail {
                 """.formatted(otp);
 
         CreateEmailOptions request = CreateEmailOptions.builder()
-                .from("Note-Stack <onboarding@resend.dev>")
+                .from("notestack@onresend.com")
                 .to(to)
-                .subject("User Authentication")
+                .subject("Verify your NoteStack account")
                 .html(htmlContent)
                 .build();
-
 
         try {
             CreateEmailResponse response = resend.emails().send(request);
