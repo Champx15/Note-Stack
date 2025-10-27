@@ -1,24 +1,14 @@
 package com.champ.notes_app.Service;
 
-import com.resend.Resend;
-import com.resend.services.emails.model.CreateEmailOptions;
-import com.resend.services.emails.model.CreateEmailResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import com.resend.core.exception.ResendException;
+import com.google.api.client.auth.oauth2.Credential;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.stereotype.Service;
-
-import java.io.UnsupportedEncodingException;
 
 @Service
 public class EmailService implements IServiceEmail {
 
-    @Value("${resend.api.key}")
-    private String resendApiKey;
-
     @Override
     public void sendHtmlEmail(String to, String otp) throws Exception {
-        Resend resend = new Resend(resendApiKey);
 
         String htmlContent = """
                 <html>
@@ -108,17 +98,17 @@ public class EmailService implements IServiceEmail {
                 </html>
                 """.formatted(otp);
 
-        CreateEmailOptions request = CreateEmailOptions.builder()
-                .from("notestack@onresend.com")
-                .to(to)
-                .subject("Verify your NoteStack account")
-                .html(htmlContent)
-                .build();
+        String plainText = "Your OTP code for NoteStack is: " + otp;
 
-        try {
-            CreateEmailResponse response = resend.emails().send(request);
-        } catch (ResendException e) {
-            throw new RuntimeException("Failed to send email: " + e.getMessage(), e);
-        }
+        // 2️⃣ Authorize Gmail (headless mode if on Render)
+        Credential credential = OAuthService.authorize();
+        String accessToken = credential.getAccessToken();
+
+        // 3️⃣ Create the HTML email using GmailService
+        MimeMessage email = GmailService.createEmailHtml(to, "me", "Verify your NoteStack account", htmlContent, plainText);
+
+        // 4️⃣ Send email via Gmail API
+        GmailService.sendEmail(accessToken, to, "me", "Verify your NoteStack account", htmlContent);
+
     }
 }
