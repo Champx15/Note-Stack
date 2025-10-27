@@ -26,6 +26,9 @@ public class OAuthService {
 
         // Refresh access token before use
         credential.refreshToken();
+        credential.refreshToken();
+        String accessToken = credential.getAccessToken();
+
 
 
         return credential;
